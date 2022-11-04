@@ -32,7 +32,7 @@ export default function Sidebar({id}) {
                     </Nav.Link>
                 </Nav.Item>
             </Nav>
-            <Tab.Content className="border-right overflow-auto flex-grow-1">
+            <Tab.Content className="border-end overflow-auto flex-grow-1">
                 <Tab.Pane eventKey={CONVERSATIONS_KEY} >
                     <Conversations/>
                 </Tab.Pane> 
@@ -40,7 +40,7 @@ export default function Sidebar({id}) {
                     <Contacts/>
                 </Tab.Pane>
             </Tab.Content>
-            <div className="p-2 border-right border-top small">
+            <div className="p-2 border-end border-top small">
                 Your ID:<span className="text-muted">{id}</span>
             </div>
             <Button onClick={()=>setOpenModel(true)} className='rounded-0'>

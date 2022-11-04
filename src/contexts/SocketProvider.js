@@ -17,7 +17,7 @@ export default function SocketProvider({id,children}) {
     return ()=>newSocket.close();
   },[id])
 
-  const [socket,setSocket]=useState();
+  const [socket,setSocket]=useState(null);
   return (
     <SocketContext.Provider value={socket}>
       {children}

@@ -26,10 +26,7 @@ export default function NewContactModal({closeModal}) {
             </Form.Group>
             <Button type="submit">Create</Button>
         </Form>
-    </Modal.Body>
-    
-    
+    </Modal.Body> 
     </>
-
   )
 }
