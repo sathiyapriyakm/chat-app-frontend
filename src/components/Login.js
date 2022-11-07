@@ -1,28 +1,142 @@
-import React ,{useRef} from 'react'
-import {Button, Container,Form} from "react-bootstrap"
-import {v4 as uuidV4} from "uuid"
+import { Typography, Button } from "@mui/material";
+import React ,{useContext} from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import TextField from "@mui/material/TextField";
+import { useNavigate } from "react-router-dom";
+import { API } from "../global";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { styled } from "@mui/material/styles";
+import { blue } from "@mui/material/colors";
+import {AppContext} from "../contexts/AppState"
 
-export default function Login({onIdSubmit}) {
-    const idRef=useRef();
-    function handleSubmit(e){
-        e.preventDefault();
-        onIdSubmit(idRef.current.value);
-    }
-    function createNewId(){
-        onIdSubmit(uuidV4());
-    }
+export const ColorButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.getContrastText(blue[500]),
+  background:
+    "linear-gradient(124deg, rgba(131,58,180,1) 0%, rgba(165,50,138,1) 50%, rgba(170,49,132,1) 75%, rgba(192,44,105,1) 100%);",
+  "&:hover": {
+    backgroundColor: blue[700],
+  },
+}));
+
+export function Login() {
+  const {setToken,setId } = useContext(AppContext);
+  const navigate = useNavigate();
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const loginUser = (userDetail) => {
+
+    fetch(`${API}/login`, {
+      method: "POST",
+      body: JSON.stringify(userDetail),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((content) => {
+    if(content.message==="ok"){
+        let userData=content.user;
+        localStorage.setItem("token", content.data);
+        localStorage.setItem('userEmail', userData.Email);
+        localStorage.setItem('chat-app-id', content.user.id);
+        setToken(content.data);
+        setId(content.user.id);
+        console.log(content.user.id);
+        return navigate("/Dashboard")}
+        else{
+          setErrorMsg(content.message)
+        }
+      })
+      .catch((err) => console.error);
+  };
+  const initialValues = {
+    Email: "",
+    Password: "",
+  };
+  const userValidationSchema = Yup.object({
+    Email: Yup.string().email().required("Required"),
+    Password: Yup.string().required("Required"),
+  });
+
+  const { handleBlur, handleChange, handleSubmit, values, errors, touched } =
+    useFormik({
+      initialValues: initialValues,
+      validationSchema: userValidationSchema,
+      onSubmit: (userDetail) => {
+        setErrorMsg("");
+        loginUser(userDetail);
+      },
+    });
+
   return (
-    <Container className="align-items-center d-flex" style={{height:"100vh"}}>
-        <Form onSubmit={handleSubmit} className="w-100">
-            <Form.Group>
-                <Form.Label>
-                    Enter your ID
-                </Form.Label>
-                <Form.Control type="text" ref={idRef} required/>
-            </Form.Group>
-            <Button className="me-2" type="submit" >Login</Button>
-            <Button variant='secondary' onClick={createNewId} >Create a new ID</Button>
-        </Form>
-        </Container>
-  )
+    <div className="add-user-container">
+      <div
+        className="wrapper"
+        style={{
+          position: "relative",
+          textAlign: "center",
+          borderStyle: "solid",
+          borderWidth: "5px",
+          display: "inline-block",
+        }}
+      >
+        <form onSubmit={handleSubmit} className="add-user-form">
+          <Typography
+            variant="h4"
+            pb={2}
+            sx={{
+              textAlign: "center",
+            }}
+          >
+            Login Details
+          </Typography>
+
+          <TextField
+            className="add-user-name"
+            label="Email"
+            type="Email"
+            value={values.Email}
+            name="Email"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.Email && errors.Email ? true : false}
+            helperText={touched.Email && errors.Email ? errors.Email : ""}
+          />
+          <TextField
+            className="add-user-name"
+            label="Password"
+            type="password"
+            value={values.Password}
+            name="Password"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.Password && errors.Password ? true : false}
+            helperText={
+              touched.Password && errors.Password ? errors.Password : ""
+            }
+          />
+          <ColorButton
+            className="add-user-btn"
+            type="submit"
+            variant="contained"
+          >
+            Login
+          </ColorButton>
+          <div className="text-center" style={{ color: "red" }}>
+            {errorMsg}
+          </div>
+          <div className="text-center" style={{ color: "blue" }}>
+            <Link to="/Register">Create Account!</Link>
+            <br />
+            <br />
+            <Link to="/ForgetPassword">Forget Password?</Link>
+            <br />
+            
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

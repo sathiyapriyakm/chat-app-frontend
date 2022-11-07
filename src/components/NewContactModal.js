@@ -1,14 +1,19 @@
-import React, {useRef} from 'react'
+import React, {useRef,useContext} from 'react'
 import { Form, Modal,Button } from 'react-bootstrap'
-import { useContacts } from '../contexts/ContactsProvider';
+import {AppContext} from "../contexts/AppState"
 
 export default function NewContactModal({closeModal}) {
     const idRef= useRef();
     const nameRef= useRef();
-    const {createContact}= useContacts();
+    const {createContact } = useContext(AppContext);
+    // const { token } = useContext(AppContext);
+    // const email = localStorage.getItem('userEmail');
+    //  const {createContact}= useContacts();
+
     function handleSubmit(e){
         e.preventDefault();
-         createContact(idRef.current.value,nameRef.current.value);
+        
+         createContact({id:idRef.current.value,name:nameRef.current.value});
         closeModal();
     }
 

@@ -1,9 +1,10 @@
-import React,{useState} from 'react'
+import React,{useState,useContext} from 'react';
 import {Tab,Nav, Button,Modal} from "react-bootstrap"
 import Conversations from './Conversations';
 import Contacts from './Contacts';
 import NewContactModal from './NewContactModal';
 import NewConversationModal from './NewConversationModal';
+import {AppContext} from "../contexts/AppState"
 
 const CONVERSATIONS_KEY="conversations";
 const CONTACTS_KEY ="contacts"
@@ -12,6 +13,7 @@ export default function Sidebar({id}) {
     const [activeKey,setActiveKey]=useState(CONVERSATIONS_KEY);
     const conversationsOpen= activeKey === CONVERSATIONS_KEY; 
     const [openModel,setOpenModel]=useState(false);
+    const {handleLogOut } = useContext(AppContext);
 
     function closeModal(){
         setOpenModel(false);
@@ -46,6 +48,7 @@ export default function Sidebar({id}) {
             <Button onClick={()=>setOpenModel(true)} className='rounded-0'>
                 New { conversationsOpen? "Conversation" :"Contact"}
             </Button>
+            <button type="button" className="btn btn-danger rounded-0" onClick={handleLogOut}>LogOut</button>
             <Modal show={openModel} onHide={closeModal}>
                 {conversationsOpen ? 
                 <NewConversationModal closeModal={closeModal} /> : 
